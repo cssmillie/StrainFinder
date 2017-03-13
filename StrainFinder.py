@@ -117,6 +117,7 @@ def parse_args():
     group3.add_argument('--robust', help='Robust EM (pay penalty to use uniform frequencies)?', action='store_true', default=False)
     group3.add_argument('--penalty', help='Penalty for robust EM', type=float, default=1.25)
     group3.add_argument('--exhaustive', help='Exhaustively search genotypes?', action='store_true', default=False)
+    group3.add_argument('--reset', help='Reset reps and time', action='store_true', default=False)
     
     # Stop options
     group4 = parser.add_argument_group('Stop')
@@ -392,6 +393,8 @@ class Estimate(Data):
         # Calculate AIC
         penalty = 1 + self.m*(self.n - 1) + self.n*self.l*3
         self.aic = 2*penalty - 2*self.loglik
+        if not hasattr(self, 'aics'):
+            self.aics = []
         self.aics.append(self.aic)
         message(self, 'AIC is %f' %(self.aic))
         return self
@@ -402,6 +405,8 @@ class Estimate(Data):
         pp = 1 + self.m*(self.n - 1) + self.n*self.l*3
         dd = self.x.sum().sum().sum()
         self.bic = pp*np.log(dd) - 2*self.loglik
+        if not hasattr(self, 'bics'):
+            self.bics = []
         self.bics.append(self.bic)
         message(self, 'BIC is %f' %(self.bic))
         return self
@@ -482,13 +487,17 @@ class Estimate(Data):
                 else:
                     # Normal likelihood
                     lf = l1.sum()
-                # L1-like penalty
-                return -1.*lf - pi.max(axis=1).sum()
+                # L2 penalty
+                #return -1.*lf - pi.max(axis=1).sum()
+                return -1.*lf - (pi**2).sum()
             
-            # Optimize genotypes
+            # Calculate original likelihood
             x0 = self.p[:,j,:].flatten()
             l0 = f(x0)
-            soln = NLP(f, x0, h=h, lb=lb, ub=ub, gtol=1e-5, contol=1e-5, name='NLP1').solve('scipy_slsqp', plot=0)
+            
+            # Optimize genotypes
+            g = [.25] * 4 * self.n
+            soln = NLP(f, g, h=h, lb=lb, ub=ub, gtol=1e-5, contol=1e-5, name='NLP1').solve(method, plot=0)
             
             # Update genotypes
             if soln.ff <= l0 and soln.isFeasible == True:
@@ -665,8 +674,6 @@ class EM():
     
     
     def select_best_estimates(self, n_keep=None):
-        if self.estimates.size == 0:
-            return self.estimates
         if n_keep is None:
             n_keep = len(self.estimates)
         message(self, 'Selecting %d best estimates' %(n_keep))
@@ -836,13 +843,17 @@ class EM():
         return self
     
     
-    def merge_estimates(self, em, n_keep=1):
+    def merge_estimates(self, em, n_keep=1, reset=False):
         # Select the n_keep best estimates from 2 EM objects and fix references
         message(self, 'Merging EM objects')
         self.estimates = np.concatenate([em.estimates, self.estimates])
         self = self.update_best_estimates(n_keep)
-        self.total_reps = em.total_reps + self.r0
-        self.total_time = em.total_time + self.t0
+        if reset == False:
+            self.total_reps = em.total_reps + self.r0
+            self.total_time = em.total_time + self.t0
+        else:
+            self.total_reps = self.r0
+            self.total_time = self.t0
         self = self.fix_references()
         return self
     
@@ -855,11 +866,11 @@ class EM():
             return False        
     
     
-    def write_em(self, out_fn, n_keep=1, merge_out=False, force_update=False):
+    def write_em(self, out_fn, n_keep=1, merge_out=False, force_update=False, reset=False):
         
         if merge_out == True and os.path.exists(out_fn):
             em = cPickle.load(open(out_fn, 'rb'))
-            self = self.merge_estimates(em, n_keep=n_keep)
+            self = self.merge_estimates(em, n_keep=n_keep, reset=reset)
         else:
             self.total_reps += self.r0
             self.total_time += self.t0
@@ -897,7 +908,10 @@ def load_em(args):
             quit()
         em = EM(data=data)
     
-    # Set current reps and time
+    # Reset reps and time
+    if args.reset == True:
+        em.total_reps = 0
+        em.total_time = 0
     em.r0 = 0
     em.t0 = time.time()
     
