@@ -307,7 +307,7 @@ class Data():
     
     def get_genotypes(self):
         acgt = np.array('A C G T'.split())
-        seqs = acgt[np.where(self.p == 1)[2]].reshape(len(self.p), self.l)
+        seqs = acgt[np.where(self.p == 1)[2]].reshape(self.n, self.l)
         seqs = map(lambda a: ''.join(a), seqs)
         return seqs   
     
@@ -380,7 +380,7 @@ class Estimate(Data):
         
         # Strain genotypes (N,L)
         acgt = np.array('A C G T'.split())
-        w = acgt[np.where(self.p == 1)[2]].reshape(len(self.p), self.l)
+        w = acgt[np.where(self.p == 1)[2]].reshape(self.n, self.l)
         
         # Mask strain genotypes
         w[v <= detect_limit] = 'N'
@@ -727,7 +727,7 @@ class EM():
         return self
     
     
-    def shallow_search(self, n, n_reps=sys.maxint, n_iter=sys.maxint, n_keep=None, c=None, exhaustive=False, robust=False, penalty=None, dtol=None, ftol=None, ntol=None, max_reps=sys.maxint, max_time=sys.maxint, log_fn=None, out_fn=None):
+    def shallow_search(self, n, n_reps=sys.maxint, n_iter=sys.maxint, n_keep=None, c=None, exhaustive=False, random=False, robust=False, penalty=None, dtol=None, ftol=None, ntol=None, max_reps=sys.maxint, max_time=sys.maxint, log_fn=None, out_fn=None):
         message(self, 'Running shallow search')
         
         # Quickly search initial conditions
@@ -743,7 +743,7 @@ class EM():
                 break
             
             # Initialize estimate and run EM
-            estimate = Estimate(self.data, n=n, robust=robust, penalty=penalty)
+            estimate = Estimate(self.data, n=n, robust=robust, penalty=penalty, random=random)
             estimate = estimate.run_em(n_iter, c=c, dtol=dtol, ftol=ftol, ntol=ntol, max_time=max_time, exhaustive=exhaustive)
             self = self.add_estimate(estimate)
             self.r0 += 1
@@ -787,11 +787,11 @@ class EM():
         return self
     
     
-    def converge_search(self, n, n_keep=None, c=None, exhaustive=False, robust=False, penalty=None, dtol=None, ftol=None, ntol=None, max_reps=None, max_time=None, log_fn=None, out_fn=None):
+    def converge_search(self, n, n_keep=None, c=None, exhaustive=False, robust=False, penalty=None, random=False, dtol=None, ftol=None, ntol=None, max_reps=None, max_time=None, log_fn=None, out_fn=None):
         # Refine estimates (run until convergence)
         self = self.deep_search(n=n, c=c, exhaustive=exhaustive, dtol=dtol, ftol=ftol, ntol=ntol, max_time=max_time, log_fn=log_fn, out_fn=out_fn)
         # New estimates (run until convergence)
-        self = self.shallow_search(n=n, n_keep=n_keep, c=c, exhaustive=exhaustive, robust=robust, penalty=penalty, dtol=dtol, ftol=ftol, ntol=ntol, max_reps=max_reps, max_time=max_time, log_fn=log_fn, out_fn=out_fn)
+        self = self.shallow_search(n=n, n_keep=n_keep, c=c, exhaustive=exhaustive, random=random, robust=robust, penalty=penalty, dtol=dtol, ftol=ftol, ntol=ntol, max_reps=max_reps, max_time=max_time, log_fn=log_fn, out_fn=out_fn)
         return self
     
     
@@ -931,7 +931,7 @@ def load_em(args):
         elif args.aln and os.path.exists(args.aln):
             data = Data(x=cPickle.load(open(args.aln, 'rb')))
         elif args.sim:
-            data = Data(sim=args.sim, m=args.m, n=args.n, l=args.l, d=args.d, u=args.u, e=args.e, random=args.random, sparse=args.sparse, phylo=args.phylo)
+            data = Data(sim=args.sim, m=args.m, n=args.n, l=args.l, d=args.d, u=args.u, e=args.e, sparse=args.sparse, phylo=args.phylo)
             data = data.add_noise(f=args.noise)
         else:
             quit()
@@ -985,7 +985,7 @@ def run():
     
     # Shallow search
     if args.s_reps != 0 and args.converge == False:
-        em = em.shallow_search(n=args.N, n_reps=args.s_reps, n_iter=args.s_iter, n_keep=args.n_keep, c=c, robust=args.robust, penalty=args.penalty, exhaustive=args.exhaustive, dtol=args.dtol, ftol=args.ftol, ntol=args.ntol, max_reps=args.max_reps, max_time=args.max_time, log_fn=args.log, out_fn=args.em_out)
+        em = em.shallow_search(n=args.N, n_reps=args.s_reps, n_iter=args.s_iter, n_keep=args.n_keep, c=c, robust=args.robust, penalty=args.penalty, random=args.random, exhaustive=args.exhaustive, dtol=args.dtol, ftol=args.ftol, ntol=args.ntol, max_reps=args.max_reps, max_time=args.max_time, log_fn=args.log, out_fn=args.em_out)
     
     # Deep search
     if args.d_reps != 0 and args.converge == False:
@@ -993,7 +993,7 @@ def run():
     
     # Converge search
     if args.converge == True:
-        em = em.converge_search(n=args.N, c=c, exhaustive=args.exhaustive, robust=args.robust, penalty=args.penalty, dtol=args.dtol, ftol=args.ftol, ntol=args.ntol, max_reps=args.max_reps, max_time=args.max_time, log_fn=args.log, out_fn=args.em_out)
+        em = em.converge_search(n=args.N, c=c, exhaustive=args.exhaustive, robust=args.robust, penalty=args.penalty, random=args.random, dtol=args.dtol, ftol=args.ftol, ntol=args.ntol, max_reps=args.max_reps, max_time=args.max_time, log_fn=args.log, out_fn=args.em_out)
     
     # Check convergence
     em.global_convergence(min_reps=args.min_reps, min_gdist=args.min_gdist, min_fdist=args.min_fdist, detect_limit=args.detect_limit, log_id=args.em_out, log_fn=args.log)
