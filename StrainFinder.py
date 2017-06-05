@@ -1,7 +1,6 @@
 import argparse, copy, cPickle, itertools, os.path, random, sys, time, uuid
 import numpy as np
 import scipy.spatial.distance as ssd
-import scipy.cluster.hierarchy as sch
 from openopt import NLP, MINLP
 np.set_printoptions(precision=3)
 np.set_printoptions(suppress=True)
