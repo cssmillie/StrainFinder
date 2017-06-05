@@ -1,6 +1,7 @@
 import argparse, copy, cPickle, itertools, os.path, random, sys, time, uuid
 import numpy as np
 import scipy.spatial.distance as ssd
+import scipy.cluster.hierarchy as sch
 from openopt import NLP, MINLP
 np.set_printoptions(precision=3)
 np.set_printoptions(suppress=True)
@@ -36,6 +37,8 @@ def message(self, x):
 
 def rselect(x):
     # Select random index using weights in x
+    if sum(x) == 0:
+        x = [1.] * len(x)
     if sum(x) != 1:
         x = norm(x)
     ci = 0
@@ -108,6 +111,7 @@ def parse_args():
     # Search options
     group3 = parser.add_argument_group('Search')
     group3.add_argument('-N', help='Number of strains to estimate', type=int, default=None)
+    group3.add_argument('--random', help='Use random strain genotypes (default = dominant SNPs)', action='store_true', default=False)
     group3.add_argument('--s_reps', help='Number of searches (shallow)', type=int, default=sys.maxint)
     group3.add_argument('--s_iter', help='Number of iterations (shallow)', type=int, default=sys.maxint)
     group3.add_argument('--d_reps', help='Number of searches (deep)', type=int, default=0)
@@ -231,6 +235,26 @@ class Data():
         return self
     
     
+    def majority_p(self):
+        
+        # select random number of strains
+        k = random.randint(i, min(self.m, self.n))
+        message(self, 'Guessing initial strain genotypes (%d x %d) from dominant SNPs in %d samples' %(self.n, self.l, k))
+        
+        # generate random genotypes (n x l x 4)
+        self.p = np.array([[random.choice(nts) for j in range(self.l)] for i in range(self.n)])
+        
+        # get dominant snps in each sample (m x l x 4)
+        p = nts[self.data.x.argmax(axis=2)]
+        
+        # select random strain indices and replace
+        i = random.sample(range(self.n), k)
+        j = random.sample(range(self.m), k)
+        self.p[i,:,:] = p[j,:,:]
+        
+        return self
+    
+    
     def phylo_p(self):
         message(self, 'Generating random genotypes (%d x %d)' %(self.n, self.l))
         
@@ -284,7 +308,7 @@ class Data():
     
     def get_genotypes(self):
         acgt = np.array('A C G T'.split())
-        seqs = acgt[np.where(self.p == 1)[2]].reshape(self.n, self.l)
+        seqs = acgt[np.where(self.p == 1)[2]].reshape(len(self.p), self.l)
         seqs = map(lambda a: ''.join(a), seqs)
         return seqs   
     
@@ -311,7 +335,7 @@ class Data():
 
 class Estimate(Data):
     
-    def __init__(self, data_obj, n, p=None, z=None, e=.01, robust=False, penalty=None):
+    def __init__(self, data_obj, n, p=None, z=None, random=False, e=.01, robust=False, penalty=None):
         
         self.data = data_obj # alignment data
         self.x = self.data.x # alignment (M,L,4)
@@ -321,6 +345,7 @@ class Estimate(Data):
         self.p = p # strain genotypes (N,L,4)
         self.z = z # strain frequencies (M,N)
         self.e = e # error rate
+        self.random = random
         self.loglik = None # current log-likelihood
         self.logliks = [] # past log-likelihoods
         self.aic = None # current aic
@@ -334,10 +359,13 @@ class Estimate(Data):
         self.uid = uuid.uuid4() # unique id
         
         # Random guess
-        if self.p is None:
-            self = self.random_p()
         if self.z is None:
             self = self.random_z()
+        if self.p is None:
+            if self.random == True:
+                self = self.random_p()
+            else:
+                self = self.majority_p()
         
         # Log-likelihood
         self = self.calc_likelihood()
@@ -353,7 +381,7 @@ class Estimate(Data):
         
         # Strain genotypes (N,L)
         acgt = np.array('A C G T'.split())
-        w = acgt[np.where(self.p == 1)[2]].reshape(self.n, self.l)
+        w = acgt[np.where(self.p == 1)[2]].reshape(len(self.p), self.l)
         
         # Mask strain genotypes
         w[v <= detect_limit] = 'N'
@@ -586,12 +614,12 @@ class Estimate(Data):
                 break
             
             # Optimize genotypes and frequencies
+            self = self.max_loglik_z()
             if exhaustive == True:
                 self = self.exhaustive_search_p(c)
             else:
                 self = self.max_loglik_p()
-            self = self.max_loglik_z()
-
+            
             # Update likelihoods
             self = self.calc_likelihood()
             self = self.calc_aic()
@@ -730,6 +758,8 @@ class EM():
     def deep_search(self, n, n_reps=1, n_iter=sys.maxint, n_keep=None, c=None, exhaustive=False, dtol=None, ftol=None, ntol=None, max_time=sys.maxint, log_fn=None, out_fn=None):
         
         # Get indices of estimates for deep search
+        if len(self.estimates) == 0:
+            return self
         if n_reps < 0:
             order = sorted(random.sample(range(len(self.estimates)), abs(n_reps)))
         else:
@@ -902,7 +932,7 @@ def load_em(args):
         elif args.aln and os.path.exists(args.aln):
             data = Data(x=cPickle.load(open(args.aln, 'rb')))
         elif args.sim:
-            data = Data(sim=args.sim, m=args.m, n=args.n, l=args.l, d=args.d, u=args.u, e=args.e, sparse=args.sparse, phylo=args.phylo)
+            data = Data(sim=args.sim, m=args.m, n=args.n, l=args.l, d=args.d, u=args.u, e=args.e, random=args.random, sparse=args.sparse, phylo=args.phylo)
             data = data.add_noise(f=args.noise)
         else:
             quit()
