@@ -238,7 +238,7 @@ class Data():
     def majority_p(self):
         
         # select random number of strains
-        k = random.randint(i, min(self.m, self.n))
+        k = random.randint(1, min(self.m, self.n))
         message(self, 'Guessing initial strain genotypes (%d x %d) from dominant SNPs in %d samples' %(self.n, self.l, k))
         
         # generate random genotypes (n x l x 4)
