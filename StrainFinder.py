@@ -272,7 +272,6 @@ class Data():
         # select random strain indices and replace
         i = random.sample(range(self.n), k)
         self.p[i,:,:] = p
-        print p
         
         return self
     
