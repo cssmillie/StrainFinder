@@ -51,7 +51,7 @@ def rselect(x):
 def norm(x):
     # Normalize a vector x so that sum(x) = 1
     sum_x = sum(x)
-    return np.array([xi/sum_x for xi in x])
+    return np.array([1.*xi/sum_x for xi in x])
 
 
 def error(nt, e):
@@ -234,10 +234,11 @@ class Data():
         return self
     
     
-    def majority_p(self):
+    def majority_p(self, k=None):
         
         # select random number of strains
-        k = random.randint(1, min(self.m, self.n))
+        if k is None:
+            k = random.randint(1, min(self.m, self.n))
         message(self, 'Guessing initial strain genotypes (%d x %d) from dominant SNPs in %d samples' %(self.n, self.l, k))
         
         # generate random genotypes (n x l x 4)
@@ -250,6 +251,28 @@ class Data():
         i = random.sample(range(self.n), k)
         j = random.sample(range(self.m), k)
         self.p[i,:,:] = p[j,:,:]
+        
+        return self
+    
+
+    def weighted_p(self, k=None):
+
+        # select random number of strains
+        if k is None:
+            k = random.randint(1, min(self.m, self.n))
+        message(self, 'Guessing initial strain genotypes (%d x %d) from random SNPs in %d samples' %(self.n, self.l, k))
+
+        # generate random genotypes (n x l x 4)
+        self.p = np.array([[random.choice(nts) for j in range(self.l)] for i in range(self.n)])
+
+        # select k random strains from samples
+        i = np.array(random.sample(range(self.m), self.m))[[j % self.m for j in range(k)]]
+        p = np.apply_along_axis(lambda x: nts[rselect(x)], 2, self.data.x[i,:,:])
+
+        # select random strain indices and replace
+        i = random.sample(range(self.n), k)
+        self.p[i,:,:] = p
+        print p
         
         return self
     
@@ -947,7 +970,7 @@ def load_em(args):
     return em
 
 
-def write_results(args, em, detect_limit=0):
+def write_results(args, em, detect_limit=0, reset=False):
     # Write alignment, data, and EM object
     if args.aln_out:
         em.data.write_aln(out_fn=args.aln_out)
@@ -955,7 +978,7 @@ def write_results(args, em, detect_limit=0):
         em.data.write_data(out_fn=args.data_out)
     if args.em_out:
         n_keep = args.n_keep
-        em.write_em(out_fn=args.em_out, merge_out=args.merge_out, n_keep=n_keep, force_update=args.force_update)
+        em.write_em(out_fn=args.em_out, merge_out=args.merge_out, n_keep=n_keep, force_update=args.force_update, reset=reset)
     if args.otu_out:
         em.write_otu_table(out_fn=args.otu_out, detect_limit=detect_limit)
     
@@ -999,7 +1022,7 @@ def run():
     em.global_convergence(min_reps=args.min_reps, min_gdist=args.min_gdist, min_fdist=args.min_fdist, detect_limit=args.detect_limit, log_id=args.em_out, log_fn=args.log)
     
     # Write results
-    write_results(args, em, detect_limit=args.detect_limit)
+    write_results(args, em, detect_limit=args.detect_limit, reset=args.reset)
 
 
 if __name__ == '__main__':
