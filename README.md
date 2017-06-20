@@ -7,7 +7,7 @@ https://bitbucket.org/yonatanf/strainfinder/
 ## Overview
 Strain Finder takes as input a reference genome alignment and the number of strains to infer. It finds maximum likelihood estimates for the strain genotypes and the strain frequencies across all metagenomes.
 
-Strain Finder uses the EM algorithm to perform the optimization. Because EM only converges to a local optimum, but not necessarily a global optimum, you should run Strain Finder with many initial conditions and select the estimate with the best likelihood. Additionally, because the number of strains is not known in advance, you should run it for N=2,3,...,k strains. You can select the optimal number of strains with model selection criteria, such as AIC/BIC scores or the LRT.
+Strain Finder uses the EM algorithm to perform the optimization. Because EM only converges to a local optimum, but not a global optimum, you should run Strain Finder with many initial conditions and select the estimate with the best likelihood. Additionally, because the number of strains is not known in advance, you should run it for N=2,3,...,k strains. You can select the optimal number of strains with model selection criteria, such as AIC/BIC scores or the LRT.
 
 ## Quick start
 The input to Strain Finder is a cPickled numpy alignment. To generate this file, map your metagenomes against a reference, then use a variant caller (such as mpileup) to count the SNPs at every position. After you have generated this file, you are ready to use Strain Finder. Here is a quick example:
