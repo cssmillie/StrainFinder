@@ -38,7 +38,7 @@ You can also simulate alignments with the options in the 'Simulation' group. Str
 ## Search strategies
 Strain Finder starts with an initial guess for the strain genotypes. This guess is informed by the majority SNPs in each sample. Strain Finder then uses the EM algorithm to iteratively optimize the strain frequencies and genotypes until they converge onto a final estimate. The --max\_reps option specify the minimum and maximum numbers of initial conditions to explore. After an EM object has exceeded --max\_reps, it will no longer perform additional searches. 
 
-At any given time, Strain Finder will only hold a fixed number of estimates. You can control this number with the --n\_keep flag. For example, --n\_keep 3 tells Strain Finder to save the 3 estimates with the best log-likelihoods. If it finds a better estimate, it will automatically replace the estimate with the lowest log-likelihood.
+At any given time, Strain Finder will only hold a fixed number of estimates. You can control this number with the --n\_keep option. For example, --n\_keep 3 tells Strain Finder to save the 3 estimates with the best log-likelihoods. If it finds a better estimate, it will automatically replace the estimate with the lowest log-likelihood.
 
 ## Local convergence
 At a certain point, Strain Finder will stop making significant gains in likelihood. When this happens, it is better to search more initial conditions than to refine your current estimate. After each iteration, Strain Finder measures the log-likelihood increase. If this increase is less than --dtol for --ntol iterations, then the current estimate has converged.
