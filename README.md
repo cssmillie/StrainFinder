@@ -90,9 +90,9 @@ This writes the strain genotypes and strain frequencies as an OTU table. The str
 ## Extras
 Strain Finder also has options for robust estimation (automatically ignore incompatible alignment sites) and to exhaustively search strain genotype space (instead of numerical optimization).
 
-In general, always use --merge\_out and --force\_update
-
 ## Notes
-After some trial and error, I do not suggest using the shallow and deep search options. Instead, use the search strategy outlined above.
+Do not use the shallow and deep search options. Instead, use the search strategy outlined above (--max_reps and local convergence)
 
 The global convergence criteria do not work with insufficient data. Future plans to mask sites with low coverage when calculating the genotype distances among estimates.
+
+In general, always use --merge\_out and --force\_update
