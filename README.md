@@ -14,7 +14,7 @@ The input to Strain Finder is a cPickled numpy alignment. To generate this file,
 
 python StrainFinder.py -N 5 --aln aln.cpickle --em em.cpickle --max\_reps 10 --n\_keep 3 --dtol 1 --ntol 2 --max\_iter 25 --max\_time 3600 --converge --em\_out em.cpickle --force\_update --merge\_output --otu\_out otu\_table.txt --log log.txt 
 
-This command reads the alignment data from 'aln.cpickle' (or 'em.cpickle' if it exists). It estimates strains from 10 initial conditions, keeping the 3 best estimates. Each search terminates after the local convergence criteria (specified by '--dtol', '--ntol', and '--max\_iter') have been met, or if the '--max\_time' limit of 3600 seconds has been reached. New searches started with the '--converge' command will pick up where the last search left off. It saves the results in em.cPickle and writes the strain profiles to 'otu\_table.txt'. For parallelization, you can submit many identical jobs and they will communicate via 'log.txt'.
+This command reads the alignment data from aln.cpickle (or em.cpickle if it exists). It estimates strains from 10 initial conditions, keeping the 3 best estimates. Each search terminates after the local convergence criteria (specified by --dtol, --ntol, and --max\_iter) have been met, or if the --max\_time limit of 3600 seconds has been reached. New searches started with the --converge command will pick up where the last search left off. It saves the results in em.cPickle and writes the strain profiles to otu\_table.txt. For parallelization, you can submit many identical jobs and they will communicate via log.txt.
 
 ## Inputs
 • Numpy array (--aln)
@@ -33,23 +33,23 @@ Alternatively, if you have run Strain Finder and saved the results as an EM obje
 
 • Simulated data (--sim)
 
-You can also simulate alignments with the options in the 'Simulation' group. Strain genotypes can be simulated on a phylogenetic tree with the '--phylo' and '-u' options. You can also add noise to your alignment with the '--noise' option.
+You can also simulate alignments with the options in the 'Simulation' group. Strain genotypes can be simulated on a phylogenetic tree with the --phylo and -u options. You can also add noise to your alignment with the --noise option.
 
 ## Search strategies
 Strain Finder starts with an initial guess for the strain genotypes. This guess is informed by the majority SNPs in each sample. Strain Finder then uses the EM algorithm to iteratively optimize the strain frequencies and genotypes until they converge onto a final estimate.
 
-At any given time, Strain Finder will only hold a fixed number of estimates. You can control this number with the '--n\_keep' flag. For example, '--n\_keep 3' tells Strain Finder to save the 3 estimates with the best log-likelihoods. If it finds a better estimate, it will automatically replace the estimate with the lowest log-likelihood.
+At any given time, Strain Finder will only hold a fixed number of estimates. You can control this number with the --n\_keep flag. For example, --n\_keep 3 tells Strain Finder to save the 3 estimates with the best log-likelihoods. If it finds a better estimate, it will automatically replace the estimate with the lowest log-likelihood.
 
 ## Local convergence
-At a certain point, Strain Finder will stop making significant gains in likelihood. When this happens, it is better to search more initial conditions than to refine your current estimate. After each iteration, Strain Finder measures the log-likelihood increase. If this increase is less than '--dtol' for '--ntol' iterations, then the current estimate has converged.
+At a certain point, Strain Finder will stop making significant gains in likelihood. When this happens, it is better to search more initial conditions than to refine your current estimate. After each iteration, Strain Finder measures the log-likelihood increase. If this increase is less than --dtol for --ntol iterations, then the current estimate has converged.
 
 ## Global convergence
-You can also specify global convergence criteria (i.e. convergence between estimates). For example, suppose that after searching 100 initial conditions, your best estimates have all converged on a common solution. The degree to which these estimates must converge can be specified with the '--min\_fdist' and '--min\_gdist' options.
+You can also specify global convergence criteria (i.e. convergence between estimates). For example, suppose that after searching 100 initial conditions, your best estimates have all converged on a common solution. The degree to which these estimates must converge can be specified with the --min\_fdist and --min\_gdist options.
 
 ## Parallelization
-Strain Finder uses the '--log' file to support parallelization. By reading and writing to this file, multiple processes can communicate the results of their optimizations with each other. It is much faster to read this file than it is to load an EM object, only to discover it has already been optimized.
+Strain Finder uses the --log file to support parallelization. By reading and writing to this file, multiple processes can communicate the results of their optimizations with each other. It is much faster to read this file than it is to load an EM object, only to discover it has already been optimized.
 
-A few options can assist with parallelization. The '--max\_reps' option specify the minimum and maximum numbers of initial conditions to explore. After an EM object has exceeded '--max\_reps', it will no longer perform additional searches. The '--max\_time' option interrupts a search if it has hit the time limit and saves the results before exiting. This is useful if your cluster imposes time limits on submitted jobs.
+A few options can assist with parallelization. The --max\_reps option specify the minimum and maximum numbers of initial conditions to explore. After an EM object has exceeded --max\_reps, it will no longer perform additional searches. The --max\_time option interrupts a search if it has hit the time limit and saves the results before exiting. This is useful if your cluster imposes time limits on submitted jobs.
 
 ## Output files
 • EM file (--em_out)
