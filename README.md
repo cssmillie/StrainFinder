@@ -16,14 +16,6 @@ python StrainFinder.py -N 5 --aln aln.cpickle --em em.cpickle --max\_reps 10 --n
 
 This command reads the alignment data from 'aln.cpickle' (or 'em.cpickle' if it exists). It estimates strains from 10 initial conditions, keeping the 3 best estimates. Each search terminates after the local convergence criteria (specified by '--dtol', '--ntol', and '--max\_iter') have been met, or if the '--max\_time' limit of 3600 seconds has been reached. New searches started with the '--converge' command will pick up where the last search left off. It saves the results in em.cPickle and writes the strain profiles to 'otu\_table.txt'. For parallelization, you can submit many identical jobs and they will communicate via 'log.txt'.
 
-To run this for N=2-10 strains with 10 parallel jobs per EM object, you can do something like this:
-for n in {2..10};
-    do for rep in {1..10};
-        do echo "python StrainFinder.py -N $n --aln aln.cpickle --em em.cpickle --max\_reps 10 --n\_keep 3 --dtol 1 --ntol 2 --max\_iter 25 --max\_time 3600 --converge --em\_out em.cpickle --force\_update --merge\_output --otu\_out otu\_table.txt --log log.txt"
-    done;
-done > commands.txt
-Then submit 'commands.sh' to your cluster
-
 ## Inputs
 • Numpy array (--aln)
 
