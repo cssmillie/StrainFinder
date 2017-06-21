@@ -90,7 +90,7 @@ This writes the strain genotypes and strain frequencies as an OTU table. The str
 ## Model selection
 Strain Finder stores the AIC and BIC scores for each estimate. To select the best model by AIC:
 
-from StrainFinder import \*
+from StrainFinder
 import cPickle, numpy
 fns = ['em_object.n%d.cpickle' %(n) for n in range(2,10)]
 ems = [cPickle.load(open(fn, 'rb')) for fn in fns]
