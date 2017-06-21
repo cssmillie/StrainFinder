@@ -58,7 +58,7 @@ An EM object is a binary cPickled file. This object holds: (1) the input alignme
 
 To load the EM object:
 ```
-from StrainFinder import \*
+from StrainFinder import *
 import cPickle
 em = cPickle.load(open(em_file, 'rb'))
 ```
@@ -101,11 +101,15 @@ This writes the strain genotypes and strain frequencies as an OTU table. The str
 Strain Finder stores the AIC and BIC scores for each estimate. To select the best model by AIC:
 
 ```
-from StrainFinder import \*
+from StrainFinder import *
 import cPickle, numpy
+# Get filenames of EM objects
 fns = ['em_object.n%d.cpickle' %(n) for n in range(2,10)]
+# Load EM objects
 ems = [cPickle.load(open(fn, 'rb')) for fn in fns]
+# Get AICs for the best estimate in each EM object
 aics = [em.select_best_estimates(1)[0].aic for em in ems]
+# Select EM with minimum AIC
 best_em = ems[numpy.argmin(aics)]
 ```
 
