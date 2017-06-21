@@ -57,24 +57,24 @@ The --max\_time option interrupts a search if it has hit the time limit and save
 An EM object is a binary cPickled file. This object holds: (1) the input alignment, (2) simulated data (a Data object), (3) the strain genotypes, and the strain frequencies (Estimate objects).
 
 To load the EM object:
-from StrainFinder import \*
+```from StrainFinder import \*
 import cPickle
-em = cPickle.load(open(em_file, 'rb'))
+em = cPickle.load(open(em_file, 'rb'))```
 
 To access the alignment data:
-em.data # data object
-em.data.x # alignment data, dim = (M x L x 4)
+```em.data # data object
+em.data.x # alignment data, dim = (M x L x 4)```
 
 To access the estimates:
-em.estimates # list of estimate objects
-em.select_best_estimates(1) # estimate with best likelihood
+```em.estimates # list of estimate objects
+em.select_best_estimates(1) # estimate with best likelihood```
 
 To access the strain genotypes
-em.estimates[0].p # genotypes of first estimate, dim = (N x L x 4)
-em.estimates[0].p.get_genotypes() # fasta format
+```em.estimates[0].p # genotypes of first estimate, dim = (N x L x 4)
+em.estimates[0].p.get_genotypes() # fasta format```
 
 To access the strain frequencies
-em.estimates[0].z # frequencies of first estimate, dim = (M x N)
+```em.estimates[0].z # frequencies of first estimate, dim = (M x N)```
 
 • Alignment (--aln_out)
 
@@ -90,12 +90,12 @@ This writes the strain genotypes and strain frequencies as an OTU table. The str
 ## Model selection
 Strain Finder stores the AIC and BIC scores for each estimate. To select the best model by AIC:
 
-from StrainFinder
+```from StrainFinder import \*
 import cPickle, numpy
 fns = ['em_object.n%d.cpickle' %(n) for n in range(2,10)]
 ems = [cPickle.load(open(fn, 'rb')) for fn in fns]
 aics = [em.select_best_estimates(1)[0].aic for em in ems]
-best_em = ems[numpy.argmin(aics)]
+best_em = ems[numpy.argmin(aics)]```
 
 ## Extras
 Strain Finder also has options for robust estimation (automatically ignore incompatible alignment sites) and to exhaustively search strain genotype space (instead of numerical optimization).
