@@ -63,25 +63,25 @@ import cPickle
 em = cPickle.load(open(em_file, 'rb'))
 ```
 
-To access the alignment data:
+To access the alignment data in an EM object:
 ```
 em.data # data object
 em.data.x # alignment data, dim = (M x L x 4)
 ```
 
-To access the estimates:
+To access the estimates in an EM object:
 ```
 em.estimates # list of estimate objects
 em.select_best_estimates(1) # estimate with best likelihood
 ```
 
-To access the strain genotypes
+To access the strain genotypes of an estimate:
 ```
 em.estimates[0].p # genotypes of first estimate, dim = (N x L x 4)
 em.estimates[0].p.get_genotypes() # fasta format
 ```
 
-To access the strain frequencies
+To access the strain frequencies of an estimate:
 ```
 em.estimates[0].z # frequencies of first estimate, dim = (M x N)
 ```
@@ -103,13 +103,17 @@ Strain Finder stores the AIC and BIC scores for each estimate. To select the bes
 ```
 from StrainFinder import *
 import cPickle, numpy
+
 # Get filenames of EM objects
 fns = ['em_object.n%d.cpickle' %(n) for n in range(2,10)]
+
 # Load EM objects
 ems = [cPickle.load(open(fn, 'rb')) for fn in fns]
-# Get AICs for the best estimate in each EM object
+
+# AIC of best estimate in each EM object
 aics = [em.select_best_estimates(1)[0].aic for em in ems]
-# Select EM with minimum AIC
+
+# EM with minimum AIC
 best_em = ems[numpy.argmin(aics)]
 ```
 
