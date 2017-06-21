@@ -125,8 +125,8 @@ best_em = ems[numpy.argmin(aics)]
 Strain Finder also has options for robust estimation (automatically ignore incompatible alignment sites) and to exhaustively search strain genotype space (instead of numerical optimization).
 
 ## Notes
-Do not use the shallow and deep search options. Instead, use the search strategy outlined above (--max_reps and local convergence)
+• Do not use the shallow and deep search options. Instead, use the search strategy outlined above (--max_reps and local convergence)
 
-The global convergence criteria do not work with insufficient data. Future plans to mask low coverage sites when calculating the genotype distances among estimates
+• The global convergence criteria do not work with insufficient data. Future plans to mask low coverage sites when calculating the genotype distances among estimates
 
-In general, always use --merge\_out and --force\_update
+• In general, always use --merge\_out, --force\_update, and --msg
