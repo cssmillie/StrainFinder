@@ -13,7 +13,7 @@ Strain Finder uses the EM algorithm to perform the optimization. Because EM only
 The input to Strain Finder is a cPickled numpy alignment. To generate this file, map your metagenomes against a reference, then use a variant caller (such as mpileup) to count the SNPs at every position. After you have generated this file (see details below), you are ready to use Strain Finder. The easiest way to run Strain Finder:
 
 ```
-python StrainFinder.py -N 5 --aln aln.cpickle --em em.cpickle --max_reps 10 --n_keep 3 --dtol 1 --ntol 2 --max_iter 25 --max_time 3600 --converge --em_out em.cpickle --force_update --merge_output --otu_out otu_table.txt --log log.txt 
+python StrainFinder.py -N 5 --aln aln.cpickle --em em.cpickle --max_reps 10 --n_keep 3 --dtol 1 --ntol 2 --max_iter 25 --max_time 3600 --converge --em_out em.cpickle --force_update --merge_output --otu_out otu_table.txt --log log.txt --msg
 ```
 
 This command reads the alignment data from aln.cpickle (or em.cpickle if it exists). It estimates strains from --max\_reps 10 initial conditions, keeping the 3 best estimates. Each search terminates after the local convergence criteria (specified by --dtol, --ntol, and --max\_iter) have been met, or if the --max\_time limit of 3600 seconds has been reached. New searches started with the --converge command will pick up where the last search left off. It saves the results in em.cPickle and writes the strain profiles to otu\_table.txt. For parallelization, you can submit many identical jobs and they will optimize different estimates, communicating via log.txt.
@@ -45,10 +45,10 @@ Strain Finder starts with an initial guess for the strain genotypes. This guess 
 At any given time, Strain Finder will only hold a fixed number of estimates. You can control this number with the --n\_keep option. For example, --n\_keep 3 tells Strain Finder to save the 3 estimates with the best log-likelihoods. If it finds a better estimate, it will automatically replace the estimate with the lowest log-likelihood.
 
 ## Local convergence
-At a certain point, Strain Finder will stop making significant gains in likelihood. When this happens, it is better to search more initial conditions than to refine your current estimate. After each iteration, Strain Finder measures the log-likelihood increase. If this increase is less than --dtol for --ntol iterations, then the current estimate has converged.
+At a certain point, Strain Finder will stop making significant gains in likelihood. When this happens, it is better to search more initial conditions than to refine your current estimate. After each iteration, Strain Finder measures the log-likelihood increase. If this increase is less than --dtol for --ntol iterations, then the current estimate has converged. There is not a good way to select these parameters. I tend to use --dtol 1 and --ntol 3.
 
 ## Global convergence
-You can also specify global convergence criteria (i.e. convergence between estimates). For example, suppose that after searching 100 initial conditions, your best estimates have all converged on a common solution. The degree to which these estimates must converge can be specified with the --min\_fdist and --min\_gdist options.
+You can also specify global convergence criteria (i.e. convergence between estimates). For example, suppose that after searching 100 initial conditions, your best estimates have all converged on a common solution. The degree to which these estimates must converge can be specified with the --min\_fdist and --min\_gdist options. Strain Finder only looks at SNPs, so the genetic distance is *not* for the full  alignment.
 
 ## Parallelization
 Strain Finder uses the --log file to support parallelization. By reading and writing to this file, multiple processes can communicate the results of their optimizations with each other. It is much faster to read this file than it is to load an EM object, only to discover it has already been optimized.
