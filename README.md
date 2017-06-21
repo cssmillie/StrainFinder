@@ -21,9 +21,11 @@ This command reads the alignment data from aln.cpickle (or em.cpickle if it exis
 
 To start, the input to Strain Finder is a cPickle numpy array with dimensions (M, L, 4), with:
 
+```
 M = number of samples
 L = number of alignment positions (alignment length)
 4 = nucleotides (A,C,G,T)
+```
 
 This array is your alignment. Each entry (i,j,k) represents how often you observe nucleotide k at position j in sample i of your alignment.
 
