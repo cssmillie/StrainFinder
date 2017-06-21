@@ -13,7 +13,7 @@ Strain Finder uses the EM algorithm to perform the optimization. Because EM only
 The input to Strain Finder is a cPickled numpy alignment. To generate this file, map your metagenomes against a reference, then use a variant caller (such as mpileup) to count the SNPs at every position. After you have generated this file (see details below), you are ready to use Strain Finder. The easiest way to run Strain Finder:
 
 ```
-python StrainFinder.py -N 5 --aln aln.cpickle --em em.cpickle --max\_reps 10 --n\_keep 3 --dtol 1 --ntol 2 --max\_iter 25 --max\_time 3600 --converge --em\_out em.cpickle --force\_update --merge\_output --otu\_out otu\_table.txt --log log.txt 
+python StrainFinder.py -N 5 --aln aln.cpickle --em em.cpickle --max_reps 10 --n_keep 3 --dtol 1 --ntol 2 --max_iter 25 --max_time 3600 --converge --em_out em.cpickle --force_update --merge_output --otu_out otu_table.txt --log log.txt 
 ```
 
 This command reads the alignment data from aln.cpickle (or em.cpickle if it exists). It estimates strains from --max\_reps 10 initial conditions, keeping the 3 best estimates. Each search terminates after the local convergence criteria (specified by --dtol, --ntol, and --max\_iter) have been met, or if the --max\_time limit of 3600 seconds has been reached. New searches started with the --converge command will pick up where the last search left off. It saves the results in em.cPickle and writes the strain profiles to otu\_table.txt. For parallelization, you can submit many identical jobs and they will optimize different estimates, communicating via log.txt.
