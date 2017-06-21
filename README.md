@@ -110,10 +110,10 @@ fns = ['em_object.n%d.cpickle' %(n) for n in range(2,10)]
 # Load EM objects
 ems = [cPickle.load(open(fn, 'rb')) for fn in fns]
 
-# AIC of best estimate in each EM object
+# Get the best AIC in each EM object
 aics = [em.select_best_estimates(1)[0].aic for em in ems]
 
-# EM with minimum AIC
+# Select EM with the minimum AIC
 best_em = ems[numpy.argmin(aics)]
 ```
 
@@ -123,6 +123,6 @@ Strain Finder also has options for robust estimation (automatically ignore incom
 ## Notes
 Do not use the shallow and deep search options. Instead, use the search strategy outlined above (--max_reps and local convergence)
 
-The global convergence criteria do not work with insufficient data. Future plans to mask sites with low coverage when calculating the genotype distances among estimates.
+The global convergence criteria do not work with insufficient data. Future plans to mask low coverage sites when calculating the genotype distances among estimates
 
 In general, always use --merge\_out and --force\_update
