@@ -14,7 +14,7 @@ The input to Strain Finder is a cPickled numpy alignment. To generate this file,
 
 python StrainFinder.py -N 5 --aln aln.cpickle --em em.cpickle --max\_reps 10 --n\_keep 3 --dtol 1 --ntol 2 --max\_iter 25 --max\_time 3600 --converge --em\_out em.cpickle --force\_update --merge\_output --otu\_out otu\_table.txt --log log.txt 
 
-This command reads the alignment data from aln.cpickle (or em.cpickle if it exists). It estimates strains from --max\_reps 10 initial conditions, keeping the 3 best estimates. Each search terminates after the local convergence criteria (specified by --dtol, --ntol, and --max\_iter) have been met, or if the --max\_time limit of 3600 seconds has been reached. New searches started with the --converge command will pick up where the last search left off. It saves the results in em.cPickle and writes the strain profiles to otu\_table.txt. For parallelization, you can submit many identical jobs and they will optimize different estimates, communicating via log.txt. Usually, I send a lot of these jobs to the cluster overnight, wake up, and take the day off knowing that Strain Finder worked so hard overnight.
+This command reads the alignment data from aln.cpickle (or em.cpickle if it exists). It estimates strains from --max\_reps 10 initial conditions, keeping the 3 best estimates. Each search terminates after the local convergence criteria (specified by --dtol, --ntol, and --max\_iter) have been met, or if the --max\_time limit of 3600 seconds has been reached. New searches started with the --converge command will pick up where the last search left off. It saves the results in em.cPickle and writes the strain profiles to otu\_table.txt. For parallelization, you can submit many identical jobs and they will optimize different estimates, communicating via log.txt.
 
 ## Inputs
 • Numpy array (--aln)
@@ -86,6 +86,16 @@ If you simulated an alignment, you can save the alignment, along with the underl
 
 • OTU table (--otu\_out)
 This writes the strain genotypes and strain frequencies as an OTU table. The strain genotypes are included in the OTU names.
+
+## Model selection
+Strain Finder calculates the AIC and BIC scores for each strain estimate. To select the best model for N={2..9} strains by AIC:
+
+from StrainFinder import \*
+import cPickle, numpy
+fns = ['em_object.n%d.cpickle' %(n) for n in range(2,10)]
+ems = [cPickle.load(open(fn, 'rb')) for fn in fns]
+aics = [em.select_best_estimates(1)[0].aic for em in ems]
+best_em = ems[numpy.argmin(aics)]
 
 ## Extras
 Strain Finder also has options for robust estimation (automatically ignore incompatible alignment sites) and to exhaustively search strain genotype space (instead of numerical optimization).
