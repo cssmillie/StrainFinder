@@ -88,7 +88,7 @@ If you simulated an alignment, you can save the alignment, along with the underl
 This writes the strain genotypes and strain frequencies as an OTU table. The strain genotypes are included in the OTU names.
 
 ## Model selection
-Strain Finder calculates the AIC and BIC scores for each strain estimate. To select the best model for N={2..9} strains by AIC:
+Strain Finder stores the AIC and BIC scores for each estimate. To select the best model by AIC:
 
 from StrainFinder import \*
 import cPickle, numpy
