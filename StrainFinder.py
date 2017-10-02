@@ -62,11 +62,10 @@ def error(nt, e):
 
 
 def discretize_genotypes(a):
-    b = a.max(-1)
-    condition = a == b[..., np.newaxis]
-    a[condition] = 1
-    a[np.logical_not(condition)] = 0
-    return a
+    b = np.zeros(np.shape(a))
+    j = np.argmax(a, -1)
+    b[range(np.shape(a)[0]),j] = 1
+    return b
 
 
 def gdist(u, v):
