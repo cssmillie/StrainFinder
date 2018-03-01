@@ -102,9 +102,7 @@ for line in open(fn):
     
     # ensure that the cigar matches the sequence
     if tlen != (len(cseq) - hbeg - hend):
-        print 'error: length mismatch'
-        print '\n\n%s\n\n%s\n%d %d %d\n%s\n' %(cigar, line.rstrip(), hbeg, hend, len(cseq), cseq)
-        quit()
+        quit('ERROR 3: SAM file format')
     
     # finally, print quality filtered line
     print '\t'.join(sline)
