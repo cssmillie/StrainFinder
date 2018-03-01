@@ -40,7 +40,6 @@ minlen = int(sys.argv[3])
 cquery = ''
 cseq = ''
 cqual = ''
-cflag = 1
 cstrand = ''
 
 
@@ -70,29 +69,24 @@ for line in open(fn):
 
     # make sure read is mapped
     if int(code[-3]) == 1:
-        print 'ERROR 0'
-        quit()
-
+        quit('ERROR 1: SAM file format')
+    
     # calculate edit distance, total length
     [hbeg, alen, hend, tlen] = decode_cigar(cigar)
     mismatch = int(re.search('[NX]M:i:(\d+)', line).group(1))
     match = alen - mismatch
-
-    # handle empty seq, qual fields
-    if (seq == '*' or qual == '*') and (cquery != query):
-        print 'ERROR 1'
-        quit()
-
-    # update current seq, qual
-    if cquery != query:
-        if seq == '*' or qual == '*':
-            print 'ERROR 2'
-            quit()
+    
+    # handle SAM asterisks
+    if seq == '*' and qual == '*':
+        # use last seq/qual
+        if cquery != query:
+            quit('ERROR 2: SAM file format')
+    else:
+        # update seq/qual
         cquery = query
         cseq = seq
         cqual = qual
         cstrand = strand
-        cflag = 1
     
     # filter by percent identity
     if 1.*match/tlen < 1.*pctid/100.:
