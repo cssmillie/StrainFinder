@@ -11,8 +11,8 @@ import argparse
 
 # Get input arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--fst', help='FASTA infile')
-parser.add_argument('--out', help='Gene file outfile')
+parser.add_argument('--fst', help='Input FASTA file')
+parser.add_argument('--out', help='Output gene file')
 args = parser.parse_args()
 
 def iter_fst(fn):

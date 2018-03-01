@@ -9,9 +9,9 @@ import argparse, cPickle, glob, re, sys
 
 # Read input arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('--samples', help='Input sample list')
+parser.add_argument('--samples', help='Sample list (newline-delimited)')
 parser.add_argumnet('--gene_file', help='kpileup gene file')
-parser.add_argument('--out', help='Output file')
+parser.add_argument('--out', help='Output file (.cPickle)')
 args = parser.parse_args()
 
 # Initialize data

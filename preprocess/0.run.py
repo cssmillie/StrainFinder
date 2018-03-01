@@ -46,5 +46,5 @@ for prefix in prefixes:
     print 'perl 3.kpileup.pl %s %s.sorted.bam gene_file.txt %s %s %s > %s.kp.txt' %(prefix, prefix, args.bqual, args.mqual, args.depth, prefix)
 
 # 6) Convert to numpy
-print 'python 4.kp2np.py --samples samples.txt --gene_file gene_file.txt --out alignments.cPickle'
+print 'python 4.kp2np.py --sfile samples.txt --gfile gene_file.txt --out alignments.cPickle'
 
