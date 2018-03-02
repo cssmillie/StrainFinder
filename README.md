@@ -50,7 +50,7 @@ L = number of alignment positions (alignment length)
 4 = nucleotides (A,C,G,T)
 ```
 
-This array is your alignment. Each entry (i,j,k) represents how often you observe nucleotide k at position j in sample i of your alignment. For details on how to make this file, see the "Preprocessing" section at the end of this tutorial.
+This array is your alignment. Each entry (i,j,k) represents how often you observe nucleotide k at position j in sample i of your alignment. For details on how to make this file, see the "Preprocessing" section at the beginning of this tutorial.
 
 • EM file (--em)
 
