@@ -4,6 +4,8 @@ If you have any questions about Strain Finder, feel free to contact me (csmillie
 Strain Finder 1.0 was written by Jonathan Friedman and can be found here:
 https://bitbucket.org/yonatanf/strainfinder/
 
+kpileup was written by Katherine Huang at the Broad Institute
+
 ## Overview
 Strain Finder takes as input a reference genome alignment and the number of strains to infer. It finds maximum likelihood estimates for the strain genotypes and the strain frequencies across all metagenomes.
 
@@ -29,7 +31,7 @@ L = number of alignment positions (alignment length)
 4 = nucleotides (A,C,G,T)
 ```
 
-This array is your alignment. Each entry (i,j,k) represents how often you observe nucleotide k at position j in sample i of your alignment.
+This array is your alignment. Each entry (i,j,k) represents how often you observe nucleotide k at position j in sample i of your alignment. For details on how to make this file, see the "Preprocessing" section at the end of this tutorial.
 
 • EM file (--em)
 
@@ -121,6 +123,25 @@ aics = [em.select_best_estimates(1)[0].aic for em in ems]
 best_em = ems[numpy.argmin(aics)]
 ```
 
+## Preprocessing
+ 
+There are many ways to generate the input data for Strain Finder. We provide an example pipeline in the "preprocess" directory. The necessary commands are provided by the "0.run.py" script (note: this script does *not* run the commands itself). The basic outline is:
+
+1) Align metagenomes to reference database with BWA
+2) Filter SAM files by percent identity and match length
+3) Convert SAM files into sorted BAM files
+4) Make "gene file" for kpileup (similar to mpileup)
+5) Use kpileup to count SNPs at each alignment site
+6) Merge kpileup files and convert to numpy array format
+7) Filter numpy alignments by coverage
+8) Write separate numpy alignments for each genome
+
+The  input files for this pipeline are described below. Examples of these files are provided in the "preprocess" directory.
+--fastqs: A list of metagenomic FASTQ files to map
+--ref: Reference FASTQ database to use
+--map: Map of genomes to contigs in the reference database (tab-delimited)
+In addition, there are optional arguments controlling mapping quality, alignment filtering, etc.
+
 ## Extras
 Strain Finder also has options for robust estimation (automatically ignore incompatible alignment sites) and to exhaustively search strain genotype space (instead of numerical optimization).
 
@@ -130,3 +151,5 @@ Strain Finder also has options for robust estimation (automatically ignore incom
 • The global convergence criteria do not work with insufficient data. Future plans to mask low coverage sites when calculating the genotype distances among estimates
 
 • In general, always use --merge\_out, --force\_update, and --msg
+
+
