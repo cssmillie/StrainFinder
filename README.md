@@ -35,7 +35,7 @@ There are many ways to generate the input data for Strain Finder. We provide an 
 
 The  input files are described below and examples are provided in the "preprocess" directory on GitHub.
 --fastqs: A list of metagenomic FASTQ files to map (newline-separated)
---ref: Reference FASTQ database to use
+--ref: Reference FASTA database to use (indexed with BWA)
 --map: Map of genomes to contigs in the reference database (tab-delimited)
 There are optional arguments controlling mapping quality, alignment filtering, etc.
 

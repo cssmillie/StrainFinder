@@ -5,7 +5,7 @@ parser = argparse.ArgumentParser()
 
 g1 = parser.add_argument_group('Required arguments')
 g1.add_argument('--fastqs', help='List of FASTQ files', required=True)
-g1.add_argument('--ref', help='Reference database (FASTQ)', required=True)
+g1.add_argument('--ref', help='Reference database (FASTA)', required=True)
 g1.add_argument('--map', help='Map of genomes to contigs (tab-delimited)', required=True)
 g2 = parser.add_argument_group('BWA options')
 g2.add_argument('--pct', help='Percent identity', type=float, default=90)
