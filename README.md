@@ -20,6 +20,25 @@ python StrainFinder.py -N 5 --aln aln.cpickle --em em.cpickle --max_reps 10 --n_
 
 This command reads the alignment data from aln.cpickle (or em.cpickle if it exists). It estimates strains from --max\_reps 10 initial conditions, keeping the 3 best estimates. Each search terminates after the local convergence criteria (specified by --dtol, --ntol, and --max\_iter) have been met, or if the --max\_time limit of 3600 seconds has been reached. New searches started with the --converge command will pick up where the last search left off. It saves the results in em.cPickle and writes the strain profiles to otu\_table.txt. For parallelization, you can submit many identical jobs and they will optimize different estimates, communicating via log.txt.
 
+## Preprocessing
+ 
+There are many ways to generate the input data for Strain Finder. We provide an example pipeline in the "preprocess" directory, but *this is only an example* and we encourage you to modify it as needed. The commands you need to run are provided by the "0.run.py" script (note: this script does *not* run the commands itself). The basic outline is:
+
+1) Align metagenomes to reference database with BWA
+2) Filter SAM files by percent identity and match length
+3) Convert SAM files into sorted BAM files
+4) Make "gene file" for kpileup (similar to mpileup)
+5) Use kpileup to count SNPs at each alignment site
+6) Merge kpileup files and convert to numpy array format
+7) Filter numpy alignments by coverage
+8) Write separate numpy alignments for each genome
+
+The  input files are described below and examples are provided in the "preprocess" directory on GitHub.
+--fastqs: A list of metagenomic FASTQ files to map (newline-separated)
+--ref: Reference FASTQ database to use
+--map: Map of genomes to contigs in the reference database (tab-delimited)
+There are optional arguments controlling mapping quality, alignment filtering, etc.
+
 ## Inputs
 • Numpy array (--aln)
 
@@ -122,25 +141,6 @@ aics = [em.select_best_estimates(1)[0].aic for em in ems]
 # Select EM with the minimum AIC
 best_em = ems[numpy.argmin(aics)]
 ```
-
-## Preprocessing
- 
-There are many ways to generate the input data for Strain Finder. We provide an example pipeline in the "preprocess" directory. The necessary commands are provided by the "0.run.py" script (note: this script does *not* run the commands itself). The basic outline is:
-
-1) Align metagenomes to reference database with BWA
-2) Filter SAM files by percent identity and match length
-3) Convert SAM files into sorted BAM files
-4) Make "gene file" for kpileup (similar to mpileup)
-5) Use kpileup to count SNPs at each alignment site
-6) Merge kpileup files and convert to numpy array format
-7) Filter numpy alignments by coverage
-8) Write separate numpy alignments for each genome
-
-The  input files for this pipeline are described below. Examples of these files are provided in the "preprocess" directory.
---fastqs: A list of metagenomic FASTQ files to map
---ref: Reference FASTQ database to use
---map: Map of genomes to contigs in the reference database (tab-delimited)
-In addition, there are optional arguments controlling mapping quality, alignment filtering, etc.
 
 ## Extras
 Strain Finder also has options for robust estimation (automatically ignore incompatible alignment sites) and to exhaustively search strain genotype space (instead of numerical optimization).
