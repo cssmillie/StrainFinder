@@ -1,0 +1,2 @@
+sample1.fastq
+sample2.fastq

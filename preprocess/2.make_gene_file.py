@@ -31,10 +31,10 @@ def iter_fst(fn):
 
 # Make gene file
 out = open(args.out, 'w')
-for [sid, seq] in util.iter_fst(args.fst):
+for [sid, seq] in iter_fst(args.fst):
     sid = sid.rstrip().split()
-    contig_id = sid[0]
-    gene_id = sid[0]
+    contig_id = sid[0][1:]
+    gene_id = sid[0][1:]
     strand = '+'
     beg = 1
     end = len(seq)

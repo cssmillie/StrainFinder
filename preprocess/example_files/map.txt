@@ -1,0 +1,8 @@
+ecoli	ecoli_dnaG
+ecoli	ecoli_pgk
+ecoli	ecoli_frr
+ecoli	ecoli_nusA
+lacto	lacto_dnaG
+lacto	lacto_pgk
+lacto	lacto_frr
+lacto	lacto_nusA

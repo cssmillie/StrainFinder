@@ -10,7 +10,7 @@ import argparse, cPickle, glob, re, sys
 # Read input arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('--samples', help='Sample list (newline-delimited)')
-parser.add_argumnet('--gene_file', help='kpileup gene file')
+parser.add_argument('--gene_file', help='kpileup gene file')
 parser.add_argument('--out', help='Output file (.cPickle)')
 args = parser.parse_args()
 
@@ -38,6 +38,7 @@ for line in open(args.gene_file):
 # Add kpileup results to numpy arrays
 for sample in sample2index:
     for line in open('%s.kp.txt' %(sample)):
+        line = line.rstrip().split()
         if len(line) == 10 and line[0] != 'Sample':
             sample = line[0]
             i = sample2index[sample]
