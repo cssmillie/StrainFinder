@@ -1,4 +1,13 @@
 # Strain Finder
+
+Strain Tracking Reveals the Determinants of Bacterial Engraftment in the Human Gut Following Fecal Microbiota Transplantation.
+https://doi.org/10.1016/j.chom.2018.01.003
+
+Link to data:
+https://www. dropbox .com/sh/kfiu4wb53oemn6j/AAB13sgaKS7MV4lVqXLCxTuMa?dl=0
+
+## Notes
+
 If you have any questions about Strain Finder, feel free to contact me (csmillie AT mit DOT edu).
 
 Strain Finder 1.0 was written by Jonathan Friedman and can be found here:
