@@ -933,7 +933,8 @@ class EM():
     
     def write_otu_table(self, out_fn, detect_limit=0.):
         # Write otu table (no rownames, colnames = genotypes)
-        np.savetxt(out_fn, self.z, delimiter='\t', comments='', header='\t'.join(self.get_genotypes(detect_limit=detect_limit)))
+        estimate = self.select_best_estimates(1)[0]
+        np.savetxt(out_fn, estimate.z, delimiter='\t', comments='', header='\t'.join(estimate.get_genotypes(detect_limit=detect_limit)))
     
     
 
