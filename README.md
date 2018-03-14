@@ -6,14 +6,14 @@ Citation:
 Link to data from the paper:
 - https://www. dropbox .com/sh/kfiu4wb53oemn6j/AAB13sgaKS7MV4lVqXLCxTuMa?dl=0
 
-## Credits
-
 If you have any questions about Strain Finder, feel free to contact me (csmillie AT mit DOT edu).
 
-Strain Finder 1.0 was written by Jonathan Friedman and can be found here:
+## Credits
+
+- Strain Finder 1.0 was written by Jonathan Friedman and can be found here:
 https://bitbucket.org/yonatanf/strainfinder/
 
-kpileup was written by Katherine Huang at the Broad Institute
+- kpileup was written by Katherine Huang at the Broad Institute
 
 ## Overview
 Strain Finder takes as input a reference genome alignment and the number of strains to infer. It finds maximum likelihood estimates for the strain genotypes and the strain frequencies across all metagenomes.
