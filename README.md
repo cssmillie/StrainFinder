@@ -3,7 +3,7 @@
 Citation:
 - Strain Tracking Reveals the Determinants of Bacterial Engraftment in the Human Gut Following Fecal Microbiota Transplantation (https://doi.org/10.1016/j.chom.2018.01.003)
 
-Link to data from the paper:
+Link to data from the paper (delete spaces from URL):
 - https://www. dropbox .com/sh/kfiu4wb53oemn6j/AAB13sgaKS7MV4lVqXLCxTuMa?dl=0
 
 If you have any questions about Strain Finder, feel free to contact me (csmillie AT mit DOT edu).
