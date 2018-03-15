@@ -19,6 +19,7 @@ g4.add_argument('--tlen', help='Number of base pairs to trim from beg/end of ali
 g4.add_argument('--faln', help='Minimum fraction of aligned sites (per sample)', type=float, default=.5)
 g4.add_argument('--mcov', help='Minimum mean coverage (per sample)', type=float, default=10)
 g4.add_argument('--dcov', help='Remove sites with coverage > [dcov] standard deviations from the mean', type=float, default=1.5)
+g4.add_argument('--npos', help='Randomly subsample [npos] alignment sites', type=int, default=None)
 args = parser.parse_args()
 
 # Read input data
@@ -53,4 +54,4 @@ for prefix in prefixes:
 print 'python 4.kp2np.py --samples samples.txt --gene_file gene_file.txt --out all_alignments.cPickle'
 
 # 7) Concatenate and filter numpy alignments
-print 'python 5.filter_np.py --aln all_alignments.cPickle --map %s --samples samples.txt --tlen %s --faln %s --mcov %s --dcov %s > filter_np.log' %(args.map, args.tlen, args.faln, args.mcov, args.dcov)
+print 'python 5.filter_np.py --aln all_alignments.cPickle --map %s --samples samples.txt --tlen %s --faln %s --mcov %s --dcov %s --npos %s > filter_np.log' %(args.map, args.tlen, args.faln, args.mcov, args.dcov, args.npos)
