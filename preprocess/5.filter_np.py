@@ -13,6 +13,7 @@ parser.add_argument('--tlen', help='Number of base pairs to trim from beg/end of
 parser.add_argument('--faln', help='Minimum fraction of aligned sites (per sample)', type=float, default=.5)
 parser.add_argument('--mcov', help='Minimum mean coverage (per sample)', type=float, default=10)
 parser.add_argument('--dcov', help='Remove sites with coverage > [dcov] standard deviations from the mean', type=float, default=1.5)
+parser.add_argument('--npos', help='Randomly subsample [npos] sites from the alignment', type=int, default=None)
 args = parser.parse_args()
 
 
@@ -97,7 +98,7 @@ for genome in y:
         i = i[pos]
         print '\tFiltering samples by fraction aligned [%d x %d]' %(len(i), len(j))
     
-    # Select SNP positions
+    # Remove monomorphic alignment sites
     if x.shape[0] > 0 and x.shape[1] > 0:
         pos = ((x > 0).sum(axis=2) > 1).sum(axis=0) > 0
         x = x[:,pos,:]
@@ -118,13 +119,20 @@ for genome in y:
         x[abs(zcov) > args.dcov,:] = 0
         print '\tZeroing %d sites with atypical coverage' %((abs(zcov) > args.dcov).sum())
     
-    # Select SNP positions
+    # Remove monomorphic alignment sites
     if x.shape[0] > 0 and x.shape[1] > 0:
         pos = ((x > 0).sum(axis=2) > 1).sum(axis=0) > 0
         x = x[:,pos,:]
         j = j[pos]
         print '\tSelecting polymorphic sites [%d x %d]' %(len(i), len(j))
-    
+
+    # Randomly subsample alignment sites
+    if args.npos is not None and args.npos < x.shape[1]:
+        pos = sorted(random.sample(range(x.shape[1]), args.npos))
+        x = x[:,pos,:]
+        j = j[pos]
+        print '\tRandomly subsampling %d sites' %(args.npos)
+        
     # Test empty alignment
     if x.shape[0] == 0 or x.shape[1] == 0:
         print'\tSkipping genome [%d samples x %d sites]' %(len(i), len(j))
