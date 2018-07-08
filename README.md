@@ -28,9 +28,10 @@ python StrainFinder.py --aln aln.cpickle -N 5 --max_reps 10 --dtol 1 --ntol 2 --
 
 ```
 
+**This is only an example showing the syntax. To obtain better estimates, you often need to run Strain Finder for a longer period of time.**
+
 This command reads the alignment data from aln.cpickle (or em.cpickle if it exists). It estimates strains from --max\_reps 10 initial conditions, keeping the 3 best estimates. Each search terminates after the local convergence criteria (specified by --dtol and --ntol) have been met, or if the --max\_time limit of 3600 seconds has been reached. New searches started with the --converge command will pick up where the last search left off. It saves the results in em.cPickle and writes the strain profiles to otu\_table.txt. For parallelization, you can submit many identical jobs and they will optimize different estimates, communicating via log.txt.
 
-**HOWEVER, THIS IS ONLY AN EXAMPLE SHOWING THE SYNTAX. To obtain good estimates, you often need to run Strain Finder  for a long time. For example, to estimate strains for 649 reference genomes across 100+ samples, I used 100-200 cores for over 48 hours. If you are not getting good results, please try running Strain Finder for longer, especially if you have a big alignment or a large number of strains.**
 
 ## Preprocessing
  
