@@ -21,7 +21,7 @@ Strain Finder takes as input a reference genome alignment and the number of stra
 Strain Finder uses the EM algorithm to perform the optimization. Because EM only converges to a local optimum, but not necessarily a global optimum, you should run Strain Finder with many initial conditions and select the estimate with the best likelihood. Additionally, because the number of strains is not known in advance, you should run it for 2-N strains. You can select the optimal number of strains with model selection criteria, such as AIC, BIC, or the LRT.
 
 ## Quick start
-The input to Strain Finder is a cPickled numpy alignment (see details below). To generate this file, map your metagenomes against a reference, then use a variant caller (such as mpileup) to count the SNPs at every position. *It is important that you only include polymorphic positions in this alignment.* The reference should be limited to "core genes" shared by all strains, as copy number variation will distort the SNP frequencies that are associated with each strain. Once you have generated this file, you are ready to use Strain Finder. The easiest way to run Strain Finder:
+The input to Strain Finder is a cPickled numpy alignment (see "Preprocessing" details below). To generate this file, map your metagenomes against a reference, then use a variant caller (such as mpileup) to count the SNPs at every position. *It is important that you only include polymorphic positions in this alignment.* The reference should be limited to "core genes" shared by all strains, as copy number variation will distort the SNP frequencies that are associated with each strain. Once you have generated this file, you are ready to use Strain Finder. The easiest way to run StrainFinder is something like this:
 
 ```
 python StrainFinder.py --aln aln.cpickle -N 5 --max_reps 10 --dtol 1 --ntol 2 --max_time 3600 --converge --em em.cpickle --em_out em.cpickle --otu_out otu_table.txt --log log.txt --n_keep 3 --force_update --merge_output --msg
@@ -29,6 +29,8 @@ python StrainFinder.py --aln aln.cpickle -N 5 --max_reps 10 --dtol 1 --ntol 2 --
 ```
 
 This command reads the alignment data from aln.cpickle (or em.cpickle if it exists). It estimates strains from --max\_reps 10 initial conditions, keeping the 3 best estimates. Each search terminates after the local convergence criteria (specified by --dtol and --ntol) have been met, or if the --max\_time limit of 3600 seconds has been reached. New searches started with the --converge command will pick up where the last search left off. It saves the results in em.cPickle and writes the strain profiles to otu\_table.txt. For parallelization, you can submit many identical jobs and they will optimize different estimates, communicating via log.txt.
+
+**HOWEVER, THIS IS ONLY AN EXAMPLE SHOWING THE SYNTAX. To obtain good estimates, you often need to run Strain Finder  for a long time. For example, to estimate strains for 649 reference genomes across 100+ samples, I used 100-200 cores for over 48 hours. If you are not getting good results, please try running Strain Finder for longer, especially if you have a big alignment or a large number of strains.**
 
 ## Preprocessing
  
