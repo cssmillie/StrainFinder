@@ -20,7 +20,7 @@ Strain Finder takes as input a reference genome alignment and the number of stra
 
 Strain Finder uses the EM algorithm to perform the optimization. Because EM only converges to a local optimum, but not necessarily a global optimum, you should run Strain Finder with many initial conditions and select the estimate with the best likelihood. Additionally, because the number of strains is not known in advance, you should run it for 2-N strains. You can select the optimal number of strains with model selection criteria, such as AIC, BIC, or the LRT.
 
-## Important note
+## Note
 Strain Finder takes a long time to run. If you are not getting good results, please let it run for a longer period of time. For example, in the Strain Finder paper, to estimate strains for 649 reference genomes across ~100 samples, I used 100-200 cores for 48+ hours.
 
 ## Quick start
